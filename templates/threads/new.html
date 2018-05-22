@@ -1,0 +1,8 @@
+<div class="page-header">
+  <h1>New Thread</h1>
+</div>
+
+<%= form_for(thread, {action: threadsPath(), method: "POST"}) { %>
+  <%= partial("threads/form.html") %>
+  <a href="<%= threadsPath() %>" class="btn btn-warning" data-confirm="Are you sure?">Cancel</a>
+<% } %>

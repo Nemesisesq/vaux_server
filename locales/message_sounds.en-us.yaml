@@ -1,0 +1,6 @@
+- id: "message_sound.created.success"
+  translation: "MessageSound was successfully created."
+- id: "message_sound.updated.success"
+  translation: "MessageSound was successfully updated."
+- id: "message_sound.destroyed.success"
+  translation: "MessageSound was successfully destroyed."

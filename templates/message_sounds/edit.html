@@ -1,0 +1,8 @@
+<div class="page-header">
+  <h1>Edit MessageSound</h1>
+</div>
+
+<%= form_for(messageSound, {action: messageSoundPath({ message_sound_id: messageSound.ID }), method: "PUT"}) { %>
+  <%= partial("message_sounds/form.html") %>
+  <a href="<%= messageSoundPath({ message_sound_id: messageSound.ID }) %>" class="btn btn-warning" data-confirm="Are you sure?">Cancel</a>
+<% } %>

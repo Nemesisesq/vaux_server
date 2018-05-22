@@ -1,0 +1,8 @@
+<div class="page-header">
+  <h1>Edit Message</h1>
+</div>
+
+<%= form_for(message, {action: messagePath({ message_id: message.ID }), method: "PUT"}) { %>
+  <%= partial("messages/form.html") %>
+  <a href="<%= messagePath({ message_id: message.ID }) %>" class="btn btn-warning" data-confirm="Are you sure?">Cancel</a>
+<% } %>

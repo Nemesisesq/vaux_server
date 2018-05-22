@@ -1,0 +1,22 @@
+<div class="page-header">
+  <h1>MessageSound#Show</h1>
+</div>
+
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= messageSoundsPath() %>" class="btn btn-info">Back to all MessageSounds</a></li>
+  <li><a href="<%= editMessageSoundPath({ message_sound_id: messageSound.ID })%>" class="btn btn-warning">Edit</a></li>
+  <li><a href="<%= messageSoundPath({ message_sound_id: messageSound.ID })%>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+</ul>
+
+<p>
+  <strong>MessageID</strong>: <%= messageSound.MessageID %>
+</p>
+<p>
+  <strong>SoundID</strong>: <%= messageSound.SoundID %>
+</p>
+<p>
+  <strong>Message</strong>: <%= messageSound.Message %>
+</p>
+<p>
+  <strong>Sound</strong>: <%= messageSound.Sound %>
+</p>

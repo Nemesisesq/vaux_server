@@ -1,0 +1,37 @@
+<div class="page-header">
+  <h1>MessageSounds</h1>
+</div>
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= newMessageSoundsPath() %>" class="btn btn-primary">Create New MessageSound</a></li>
+</ul>
+
+<table class="table table-striped">
+  <thead>
+  <th>MessageID</th>
+    <th>SoundID</th>
+    <th>Message</th>
+    <th>Sound</th>
+    <th>&nbsp;</th>
+  </thead>
+  <tbody>
+    <%= for (messageSound) in messageSounds { %>
+      <tr>
+      <td><%= messageSound.MessageID %></td>
+        <td><%= messageSound.SoundID %></td>
+        <td><%= messageSound.Message %></td>
+        <td><%= messageSound.Sound %></td>
+        <td>
+          <div class="pull-right">
+            <a href="<%= messageSoundPath({ message_sound_id: messageSound.ID }) %>" class="btn btn-info">View</a>
+            <a href="<%= editMessageSoundPath({ message_sound_id: messageSound.ID }) %>" class="btn btn-warning">Edit</a>
+            <a href="<%= messageSoundPath({ message_sound_id: messageSound.ID }) %>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+          </div>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<div class="text-center">
+  <%= paginator(pagination) %>
+</div>

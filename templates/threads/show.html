@@ -1,0 +1,25 @@
+<div class="page-header">
+  <h1>Thread#Show</h1>
+</div>
+
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= threadsPath() %>" class="btn btn-info">Back to all Threads</a></li>
+  <li><a href="<%= editThreadPath({ thread_id: thread.ID })%>" class="btn btn-warning">Edit</a></li>
+  <li><a href="<%= threadPath({ thread_id: thread.ID })%>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+</ul>
+
+<p>
+  <strong>ImageUrl</strong>: <%= thread.ImageUrl %>
+</p>
+<p>
+  <strong>LastMessageAt</strong>: <%= thread.LastMessageAt %>
+</p>
+<p>
+  <strong>Name</strong>: <%= thread.Name %>
+</p>
+<p>
+  <strong>New</strong>: <%= thread.New %>
+</p>
+<p>
+  <strong>Messages</strong>: <%= thread.Messages %>
+</p>

@@ -1,0 +1,6 @@
+- id: "sound.created.success"
+  translation: "Sound was successfully created."
+- id: "sound.updated.success"
+  translation: "Sound was successfully updated."
+- id: "sound.destroyed.success"
+  translation: "Sound was successfully destroyed."

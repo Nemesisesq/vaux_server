@@ -1,0 +1,6 @@
+create_table("sounds", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("module", "integer", {})
+	t.Column("name", "string", {})
+	t.Column("color", "string", {})
+})

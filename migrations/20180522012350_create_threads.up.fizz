@@ -1,0 +1,7 @@
+create_table("threads", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("image_url", "string", {})
+	t.Column("last_message_at", "timestamp", {})
+	t.Column("name", "string", {})
+	t.Column("new", "bool", {})
+})

@@ -1,0 +1,19 @@
+<div class="page-header">
+  <h1>Sound#Show</h1>
+</div>
+
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= soundsPath() %>" class="btn btn-info">Back to all Sounds</a></li>
+  <li><a href="<%= editSoundPath({ sound_id: sound.ID })%>" class="btn btn-warning">Edit</a></li>
+  <li><a href="<%= soundPath({ sound_id: sound.ID })%>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+</ul>
+
+<p>
+  <strong>Module</strong>: <%= sound.Module %>
+</p>
+<p>
+  <strong>Name</strong>: <%= sound.Name %>
+</p>
+<p>
+  <strong>Color</strong>: <%= sound.Color %>
+</p>

@@ -1,0 +1,35 @@
+<div class="page-header">
+  <h1>Sounds</h1>
+</div>
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= newSoundsPath() %>" class="btn btn-primary">Create New Sound</a></li>
+</ul>
+
+<table class="table table-striped">
+  <thead>
+  <th>Module</th>
+    <th>Name</th>
+    <th>Color</th>
+    <th>&nbsp;</th>
+  </thead>
+  <tbody>
+    <%= for (sound) in sounds { %>
+      <tr>
+      <td><%= sound.Module %></td>
+        <td><%= sound.Name %></td>
+        <td><%= sound.Color %></td>
+        <td>
+          <div class="pull-right">
+            <a href="<%= soundPath({ sound_id: sound.ID }) %>" class="btn btn-info">View</a>
+            <a href="<%= editSoundPath({ sound_id: sound.ID }) %>" class="btn btn-warning">Edit</a>
+            <a href="<%= soundPath({ sound_id: sound.ID }) %>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+          </div>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<div class="text-center">
+  <%= paginator(pagination) %>
+</div>
