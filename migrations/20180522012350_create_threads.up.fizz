@@ -4,4 +4,7 @@ create_table("threads", func(t) {
 	t.Column("last_message_at", "timestamp", {})
 	t.Column("name", "string", {})
 	t.Column("new", "bool", {})
+	t.Column("private", "bool", {})
+	t.Column("active", "bool", {})
+	t.Column("owner_id", "uuid", {"foreign": true})
 })

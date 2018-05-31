@@ -103,6 +103,9 @@ CREATE TABLE threads (
     last_message_at timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
     new boolean NOT NULL,
+    private boolean NOT NULL,
+    active boolean NOT NULL,
+    owner_id uuid NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

@@ -19,6 +19,10 @@ type Thread struct {
 	Name          string    `json:"name" db:"name"`
 	New           bool      `json:"new" db:"new"`
 	Messages      Messages  `json:"messages" has_many:"messages" order_by:"created_at desc"`
+	Owner         User      `json:"user" db:"-" belongs_to:"user"`
+	OwnerID       uuid.UUID `json:"owner_id" db:"owner_id"`
+	Private       bool      `json:"private" db:"private"`
+	Active        bool      `json:"active" db:"active"`
 }
 
 // String is not required by pop and may be deleted
