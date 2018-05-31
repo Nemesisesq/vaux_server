@@ -20,7 +20,7 @@ type Message struct {
 	User      User         `json:"user" db:"-" belongs_to:"user"`
 	UserID    uuid.UUID    `json:"user_id" db:"user_id"`
 	Thread    Thread       `json:"thread" db:"-" belongs_to:"thread"`
-	ThreadID  uuid.UUID		`json:"thread_id" db:"thread_id"`
+	ThreadID  uuid.UUID    `json:"thread_id" db:"thread_id"`
 }
 
 // String is not required by pop and may be deleted

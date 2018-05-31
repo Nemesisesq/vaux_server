@@ -43,7 +43,7 @@ func App() *buffalo.App {
 		app.Use(csrf.New)
 
 		// Wraps each request in a transaction.
-		//  c.Value("tx").(*pop.PopTransaction)
+		//  c.Value("tx").(*pop.PopTransaction)`
 		// Remove to disable this.
 		app.Use(middleware.PopTransaction(models.DB))
 
@@ -51,6 +51,7 @@ func App() *buffalo.App {
 		var err error
 		if T, err = i18n.New(packr.NewBox("../locales"), "en-US"); err != nil {
 			app.Stop(err)
+
 		}
 		app.Use(T.Middleware())
 
@@ -61,6 +62,8 @@ func App() *buffalo.App {
 		app.Resource("/threads", ThreadsResource{})
 		app.Resource("/message_sounds", MessageSoundsResource{})
 		app.Resource("/messages", MessagesResource{})
+
+		
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 
