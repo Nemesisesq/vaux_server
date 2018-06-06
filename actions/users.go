@@ -62,8 +62,18 @@ func (v UsersResource) Show(c buffalo.Context) error {
 	// Allocate an empty User
 	user := &models.User{}
 
+	if c.Param("user_email") != "" {
+		err := tx.Find(user, c.Param("user_email"));
+
+		if err != nil {
+			return c.Error(404, err)
+		}
+	}
+
 	// To find the User the parameter user_id is used.
-	if err := tx.Find(user, c.Param("user_id")); err != nil {
+	err := tx.Find(user, c.Param("user_id"));
+
+	if err != nil {
 		return c.Error(404, err)
 	}
 

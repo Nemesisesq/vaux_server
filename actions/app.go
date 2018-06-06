@@ -11,6 +11,7 @@ import (
 	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/packr"
 	"github.com/nemesisesq/vaux_server/models"
+	"github.com/nemesisesq/vaux_server/chat"
 )
 
 // ENV is used to help switch settings based on where the
@@ -54,8 +55,11 @@ func App() *buffalo.App {
 
 		}
 		app.Use(T.Middleware())
+		app.Use(UserMiddleware())
 
 		app.GET("/", HomeHandler)
+
+		app.GET("/connect", chat.Connect)
 
 		app.Resource("/sounds", SoundsResource{})
 		app.Resource("/users", UsersResource{})
@@ -68,4 +72,12 @@ func App() *buffalo.App {
 	}
 
 	return app
+}
+
+func UserMiddleware() buffalo.MiddlewareFunc {
+	return func (next buffalo.Handler) buffalo.Handler {
+		return func(c buffalo.Context) error {
+			return next(c)
+		}
+	}
 }
