@@ -32,6 +32,12 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
@@ -496,6 +502,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "76ed0902ea894197d0a0dc8b6135f022edd6c2e6c93d97731a1ede03756c86f1"
+  inputs-digest = "26048d35f87f3356f85e51abdc4b6b5a8e788d9551c891071865b6fddf0a00c1"
   solver-name = "gps-cdcl"
   solver-version = 1
