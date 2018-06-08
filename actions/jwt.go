@@ -5,11 +5,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"fmt"
 	"github.com/nemesisesq/vaux_server/models"
-	"github.com/mitchellh/mapstructure"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
 
 	"log"
+	"encoding/json"
 )
 
 func UserMiddleware() buffalo.MiddlewareFunc {
@@ -29,13 +29,23 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 				//TODO Check the token claims to make sure that they are valid
 				if claims, ok := token.Claims.(jwt.MapClaims); ok {
 
+
+					claims["username"] = claims["cognito:username"]
+
 					log.Println("I'm here s")
 					cognitoData := models.CognitoData{}
-					mapstructure.Decode(claims, &cognitoData)
-					tx, err := pop.Connect("development")
+					tmp, err := json.Marshal(claims)
+
 					if err != nil {
-						log.Panic(err)
+						return errors.WithStack(err)
 					}
+					err = json.Unmarshal(tmp, &cognitoData)
+
+					if err != nil {
+						return errors.WithStack(err)
+					}
+
+					tx, ok := c.Value("tx").(*pop.Connection)
 					if !ok {
 						return errors.WithStack(errors.New("no transaction found"))
 					}
@@ -46,10 +56,6 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 					err = tx.Where("email = ?", cognitoData.Email).First(user)
 
 					if err != nil {
-
-					}
-
-					if user.Email == "" {
 						user.Name = cognitoData.CognitoUsername
 						user.Email = cognitoData.Email
 
@@ -61,8 +67,11 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 					}
 
 					c.Set("user", user)
+				} else {
+					return errors.WithStack(errors.New("The claims for this token we not valid"))
 				}
 			}
+
 			return next(c)
 		}
 	}

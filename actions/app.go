@@ -11,6 +11,7 @@ import (
 	"github.com/nemesisesq/vaux_server/models"
 	"github.com/nemesisesq/vaux_server/chat"
 	"net/http"
+	"github.com/gobuffalo/buffalo/middleware/csrf"
 )
 
 // ENV is used to help switch settings based on where the
@@ -40,7 +41,7 @@ func App() *buffalo.App {
 
 		// Protect against CSRF attacks. https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
 		// Remove to disable this.
-		//app.Use(csrf.New)x
+		app.Use(csrf.New)
 
 		// Wraps each request in a transaction.
 		//  c.Value("tx").(*pop.PopTransaction)`

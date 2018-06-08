@@ -5,7 +5,7 @@ type CognitoData struct {
 	EmailVerified       bool   `json:"email_verified" bson:"email_verified"`
 	Iss                 string `json:"iss" bson:"iss"`
 	PhoneNumberVerified bool   `json:"phone_number_verified" bson:"phone_number_verified"`
-	CognitoUsername     string `json:"cognito:username bson:"cognito:username"`
+	CognitoUsername     string `json:"username" bson:"username"`
 	Aud                 string `json:"aud" bson:"aud"`
 	EventID             string `json:"event_id" bson:"event_id"`
 	TokenUse            string `json:"token_use" bson:"token_use"`
