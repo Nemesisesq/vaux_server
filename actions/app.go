@@ -6,11 +6,11 @@ import (
 	"github.com/gobuffalo/buffalo/middleware/ssl"
 	"github.com/gobuffalo/envy"
 	"github.com/unrolled/secure"
-	"github.com/gobuffalo/buffalo/middleware/csrf"
 	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/packr"
 	"github.com/nemesisesq/vaux_server/models"
 	"github.com/nemesisesq/vaux_server/chat"
+	"net/http"
 )
 
 // ENV is used to help switch settings based on where the
@@ -40,13 +40,13 @@ func App() *buffalo.App {
 
 		// Protect against CSRF attacks. https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)
 		// Remove to disable this.
-		app.Use(csrf.New)
+		//app.Use(csrf.New)x
 
 		// Wraps each request in a transaction.
 		//  c.Value("tx").(*pop.PopTransaction)`
 		// Remove to disable this.
 		app.Use(middleware.PopTransaction(models.DB))
-		app.Use(UserMiddleware())
+
 
 		// Setup and use translations:
 		var err error
@@ -54,11 +54,17 @@ func App() *buffalo.App {
 			app.Stop(err)
 
 		}
+
 		app.Use(T.Middleware())
 
+		app.Use(UserMiddleware())
 		app.GET("/", HomeHandler)
 
 		app.GET("/connect", chat.Connect)
+
+		app.GET("/verify", func (c buffalo.Context) error{
+			return c.Render(http.StatusOK, r.JSON(map[string]string{"data": "Looks like everything is working"}))
+		})
 
 		app.Resource("/sounds", SoundsResource{})
 		app.Resource("/users", UsersResource{})

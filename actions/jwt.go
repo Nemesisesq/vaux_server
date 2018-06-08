@@ -43,13 +43,24 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 					// Allocate an empty User
 					user := &models.User{}
 
-					if err := tx.Where("email = ?", cognitoData.Email).First(user); err != nil {
+					err = tx.Where("email = ?", cognitoData.Email).First(user)
+
+					if err != nil {
 
 					}
 
-					c.Set("user", user)
-				} else {
+					if user.Email == "" {
+						user.Name = cognitoData.CognitoUsername
+						user.Email = cognitoData.Email
 
+						err = tx.Save(user)
+
+						if err != nil {
+							return errors.WithStack(err)
+						}
+					}
+
+					c.Set("user", user)
 				}
 			}
 			return next(c)
