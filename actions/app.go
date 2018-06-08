@@ -6,14 +6,11 @@ import (
 	"github.com/gobuffalo/buffalo/middleware/ssl"
 	"github.com/gobuffalo/envy"
 	"github.com/unrolled/secure"
-
 	"github.com/gobuffalo/buffalo/middleware/csrf"
 	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/packr"
 	"github.com/nemesisesq/vaux_server/models"
 	"github.com/nemesisesq/vaux_server/chat"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 )
 
 // ENV is used to help switch settings based on where the
@@ -49,6 +46,7 @@ func App() *buffalo.App {
 		//  c.Value("tx").(*pop.PopTransaction)`
 		// Remove to disable this.
 		app.Use(middleware.PopTransaction(models.DB))
+		app.Use(UserMiddleware())
 
 		// Setup and use translations:
 		var err error
@@ -57,7 +55,6 @@ func App() *buffalo.App {
 
 		}
 		app.Use(T.Middleware())
-		app.Use(UserMiddleware())
 
 		app.GET("/", HomeHandler)
 
@@ -74,38 +71,4 @@ func App() *buffalo.App {
 	}
 
 	return app
-}
-
-func UserMiddleware() buffalo.MiddlewareFunc {
-	return func (next buffalo.Handler) buffalo.Handler {
-		return func(c buffalo.Context) error {
-
-			t := c.Request().Header.Get("Authorization")
-			//TODO Actualy verify the token and sign the secret properly refernced in https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
-			token, _ := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
-				if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-					return nil, fmt.Errorf("There was an error")
-				}
-				return []byte("secret"), nil
-			})
-			//TODO Check the token claims to make sure that they are valid
-			if claims, ok := token.Claims.(jwt.MapClaims); ok {
-
-				fmt.Println(claims)
-				//mapstructure.Decode(claims, &cognitoData)
-				//Rehydrate User
-
-				//user.Find(bson.M{"cognito_data.sub": cognitoData.Sub})
-				//user.CognitoData = cognitoData
-				//user.Upsert(bson.M{"user_info.sub": cognitoData.Sub})
-				//return user, nil
-				//json.NewEncoder(w).Encode(user)
-			} else {
-				//json.NewEncoder(w).Encode(Exception{Message: "Invalid authorization token"})
-				//exp = Exception{Message: "Invalid authorization token"}
-				//return user, exp
-			}
-			return next(c)
-		}
-	}
 }

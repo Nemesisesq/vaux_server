@@ -313,6 +313,12 @@
   revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/mapstructure"
+  packages = ["."]
+  revision = "bb74f1db0675b241733089d5a1faa5dd8b0ef57b"
+
+[[projects]]
   name = "github.com/monoculum/formam"
   packages = ["."]
   revision = "99ca9dcbaca6d91e9665f817d0da23af6184ced3"
@@ -502,6 +508,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "26048d35f87f3356f85e51abdc4b6b5a8e788d9551c891071865b6fddf0a00c1"
+  inputs-digest = "619bf08e78b8b7bf98f12ed9529cbb52b859938be911d591242d905900858d46"
   solver-name = "gps-cdcl"
   solver-version = 1
