@@ -62,9 +62,9 @@ type Client struct {
 
 }
 
-func NewClient(user models.User) Client {
+func NewClient() Client {
 	c := Client{}
-	c.user =  user
+	//c.user =  user
 	c.subChan = make(chan []byte)
 	c.pubChan = make(chan []byte)
 	c.shutDown = make(chan bool, 1)
@@ -76,7 +76,7 @@ func NewClient(user models.User) Client {
 	}
 	c.redisConn = redisConn
 
-	c.addUser()
+	//c.addUser()
 
 	return c
 
@@ -243,10 +243,10 @@ func serveWs(w http.ResponseWriter, r *http.Request, ) {
 		return
 	}
 
-	user := r.Context().Value("user").(models.User)
-	client := NewClient(user)
+	//user := r.Context().Value("user").(models.User)
+	client := NewClient()
 	client.ws = conn
-	client.addUser()
+	//client.addUser()
 
 	// subscribe to the main
 	go client.Subscribe()
