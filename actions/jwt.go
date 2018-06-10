@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 
 	"encoding/json"
-	"github.com/kris-nova/kubicorn/cutil/logger"
+	log "github.com/sirupsen/logrus"
 )
 
 func UserMiddleware() buffalo.MiddlewareFunc {
@@ -63,7 +63,7 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 							return errors.WithStack(err)
 						}
 					}
-					logger.Info("setting user")
+					log.Info("setting user")
 					c.Set("user", *user)
 				} else {
 					return errors.WithStack(errors.New("The claims for this token we not valid"))

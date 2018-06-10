@@ -69,16 +69,7 @@
 
 [[projects]]
   name = "github.com/gobuffalo/buffalo"
-  packages = [
-    ".",
-    "binding",
-    "middleware",
-    "middleware/csrf",
-    "middleware/i18n",
-    "middleware/ssl",
-    "render",
-    "worker"
-  ]
+  packages = [".","binding","middleware","middleware/csrf","middleware/i18n","middleware/ssl","render","worker"]
   revision = "354657dfd81584bb82b8b6dff9bb9f6ab22712a8"
   version = "v0.11.1"
 
@@ -96,45 +87,25 @@
 
 [[projects]]
   name = "github.com/gobuffalo/plush"
-  packages = [
-    ".",
-    "ast",
-    "lexer",
-    "parser",
-    "token"
-  ]
+  packages = [".","ast","lexer","parser","token"]
   revision = "5d52aed81c89f76ec6f19a03537c85773102ebf4"
   version = "v3.7.3"
 
 [[projects]]
   name = "github.com/gobuffalo/pop"
-  packages = [
-    ".",
-    "associations",
-    "columns",
-    "fizz",
-    "fizz/translators",
-    "nulls"
-  ]
+  packages = [".","associations","columns","fizz","fizz/translators","nulls"]
   revision = "addd35fa30f151cdee20971b635abf6dc631837c"
   version = "v4.5.8"
 
 [[projects]]
   name = "github.com/gobuffalo/suite"
-  packages = [
-    ".",
-    "fix"
-  ]
+  packages = [".","fix"]
   revision = "e2e0134eb87394466461f262c7cb7027b9e332e0"
   version = "v2.1.1"
 
 [[projects]]
   name = "github.com/gobuffalo/tags"
-  packages = [
-    ".",
-    "form",
-    "form/bootstrap"
-  ]
+  packages = [".","form","form/bootstrap"]
   revision = "82cd7696c84aba829b74e81814ff489b64e7b56a"
   version = "v2.0.5"
 
@@ -146,10 +117,7 @@
 
 [[projects]]
   name = "github.com/gobuffalo/validate"
-  packages = [
-    ".",
-    "validators"
-  ]
+  packages = [".","validators"]
   revision = "42d8db6e06e617cdedcc7a849d6690a2cb5a8d28"
   version = "v2.0.0"
 
@@ -161,10 +129,7 @@
 
 [[projects]]
   name = "github.com/gomodule/redigo"
-  packages = [
-    "internal",
-    "redis"
-  ]
+  packages = ["internal","redis"]
   revision = "9c11da706d9b7902c6da69c592f75637793fe121"
   version = "v2.0.0"
 
@@ -201,10 +166,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/jmoiron/sqlx"
-  packages = [
-    ".",
-    "reflectx"
-  ]
+  packages = [".","reflectx"]
   revision = "2aeb6a910c2b94f2d5eb53d9895d80e27264ec41"
 
 [[projects]]
@@ -216,20 +178,13 @@
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = [
-    ".",
-    "oid"
-  ]
+  packages = [".","oid"]
   revision = "d34b9ff171c21ad295489235aec8b6626023cd04"
 
 [[projects]]
   branch = "master"
   name = "github.com/markbates/going"
-  packages = [
-    "defaults",
-    "randx",
-    "wait"
-  ]
+  packages = ["defaults","randx","wait"]
   revision = "0576708c56cea02331f864fe6e157ac7841923e4"
 
 [[projects]]
@@ -252,10 +207,7 @@
 
 [[projects]]
   name = "github.com/markbates/refresh"
-  packages = [
-    "refresh",
-    "refresh/web"
-  ]
+  packages = ["refresh","refresh/web"]
   revision = "fab0ab1230a5772b04f3b736821822935b5a5279"
   version = "v1.4.0"
 
@@ -273,12 +225,7 @@
 
 [[projects]]
   name = "github.com/mattn/anko"
-  packages = [
-    "ast",
-    "core",
-    "parser",
-    "vm"
-  ]
+  packages = ["ast","core","parser","vm"]
   revision = "e9c5c0ca86cf129292c56ddbddc4fff027844d65"
   version = "v0.0.4"
 
@@ -314,9 +261,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/mitchellh/mapstructure"
+  name = "github.com/mitchellh/hashstructure"
   packages = ["."]
-  revision = "bb74f1db0675b241733089d5a1faa5dd8b0ef57b"
+  revision = "2bca23e0e452137f789efbc8610126fd8b94f73b"
 
 [[projects]]
   name = "github.com/monoculum/formam"
@@ -326,12 +273,7 @@
 
 [[projects]]
   name = "github.com/nicksnyder/go-i18n"
-  packages = [
-    "i18n",
-    "i18n/bundle",
-    "i18n/language",
-    "i18n/translation"
-  ]
+  packages = ["i18n","i18n/bundle","i18n/language","i18n/translation"]
   revision = "0dc1626d56435e9d605a29875701721c54bc9bbd"
   version = "v1.10.0"
 
@@ -380,12 +322,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/shurcooL/go"
-  packages = [
-    "parserutil",
-    "printerutil",
-    "reflectfind",
-    "reflectsource"
-  ]
+  packages = ["parserutil","printerutil","reflectfind","reflectsource"]
   revision = "9e1955d9fb6e1ee2345ba1f5e71669263e719e27"
 
 [[projects]]
@@ -450,11 +387,7 @@
 
 [[projects]]
   name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "require",
-    "suite"
-  ]
+  packages = ["assert","require","suite"]
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
 
@@ -467,21 +400,13 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = [
-    "bcrypt",
-    "blowfish",
-    "ssh/terminal"
-  ]
+  packages = ["bcrypt","blowfish","ssh/terminal"]
   revision = "1a580b3eff7814fc9b40602fd35256c63b50f491"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = [
-    "context",
-    "html",
-    "html/atom"
-  ]
+  packages = ["context","html","html/atom"]
   revision = "57065200b4b034a1c8ad54ff77069408c2218ae6"
 
 [[projects]]
@@ -493,10 +418,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix","windows"]
   revision = "7c87d13f8e835d2fb3a70a2912c811ed0c1d241b"
 
 [[projects]]
@@ -508,6 +430,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "619bf08e78b8b7bf98f12ed9529cbb52b859938be911d591242d905900858d46"
+  inputs-digest = "888d5968a6de763c10a555b603ed455c568866d91cd8da3bfbaa39998f6644f5"
   solver-name = "gps-cdcl"
   solver-version = 1
