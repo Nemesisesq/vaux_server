@@ -12,6 +12,10 @@ import (
 	"os"
 	"net/http"
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/uuid"
+	"encoding/json"
+	"reflect"
+	"github.com/mitchellh/hashstructure"
 )
 
 const (
@@ -41,6 +45,12 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+type Data struct {
+	Type     string      `json:"type"`
+	Paylaod  interface{} `json:"payload"`
+	ThreadID interface{} `json:"thread_id"`
+}
+
 // Client is a middleman between the websocket connection and the hub (redis) connection.
 type Client struct {
 	user models.User
@@ -55,18 +65,17 @@ type Client struct {
 	currentThread models.Thread
 
 	// Buffered channel of outbound messages.
-	subChan chan []byte
-	pubChan chan []byte
+	out chan []byte
+	in chan []byte
 
 	shutDown chan bool
-
 }
 
 func NewClient() Client {
 	c := Client{}
 	//c.user =  user
-	c.subChan = make(chan []byte)
-	c.pubChan = make(chan []byte)
+	c.out = make(chan []byte)
+	c.in = make(chan []byte)
 	c.shutDown = make(chan bool, 1)
 
 	redisConn, err := redisurl.Connect()
@@ -82,16 +91,16 @@ func NewClient() Client {
 
 }
 
-func (c *Client) Subscribe(){
+func (c *Client) Subscribe() {
 
 	c.pubSubConn = &redis.PubSubConn{Conn: c.redisConn}
 
-	c.pubSubConn.Subscribe(c.currentThread.ID )
+	c.pubSubConn.Subscribe(c.currentThread.ID)
 SUB:
-	for{
+	for {
 		switch  v := c.pubSubConn.Receive().(type) {
 		case redis.Message:
-			c.subChan <- v.Data
+			c.out <- v.Data
 		case redis.Subscription:
 			break
 		case error:
@@ -102,28 +111,27 @@ SUB:
 
 }
 
-func (c *Client) Publish(){
-	PUB:
-	for{
-		select{
-		case message := <- c.pubChan:
-			c.pubSubConn.Conn.Do("PUBLISH", c.currentThread.ID, string(message) )
+func (c *Client) Publish() {
+PUB:
+	for {
+		select {
+		case message := <-c.in:
+			c.pubSubConn.Conn.Do("PUBLISH", c.currentThread.ID, string(message))
 
-		case <- c.shutDown:
+		case <-c.shutDown:
 			break PUB
 			return
 		default:
-			time.Sleep(10*time.Millisecond)
+			time.Sleep(10 * time.Millisecond)
 		}
 	}
 }
 
-func (c *Client) Unsubscribe(){
+func (c *Client) Unsubscribe() {
 
 	c.pubSubConn.Unsubscribe()
 
 }
-
 
 func (c *Client) addUser() {
 	//	Set The user name
@@ -175,14 +183,24 @@ func (c *Client) readPump() {
 			break
 		}
 
-		if messageType == 456{
+		if messageType == 456 {
 
 		}
+
+		data := Data{}
+
+		err = json.Unmarshal(message, &data)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(string(message))
+		c.processData(data)
+
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.pubChan <- message
+		c.in <- message
 	}
 }
-
 
 // writePump pumps messages from the hub to the websocket wsection.
 //
@@ -197,7 +215,7 @@ func (c *Client) writePump() {
 	}()
 	for {
 		select {
-		case message, ok := <-c.subChan:
+		case message, ok := <-c.out:
 			c.ws.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				// The hub closed the channel.
@@ -212,10 +230,10 @@ func (c *Client) writePump() {
 			w.Write(message)
 
 			// Add queued chat messages to the current websocket message.
-			n := len(c.subChan)
+			n := len(c.out)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
-				w.Write(<-c.subChan)
+				w.Write(<-c.out)
 			}
 
 			if err := w.Close(); err != nil {
@@ -230,31 +248,75 @@ func (c *Client) writePump() {
 		}
 	}
 }
-func Connect(c buffalo.Context) error{
-	serveWs(c.Response(), c.Request())
-
+func Connect(c buffalo.Context) error {
+	serveWs(c)
 	return nil
 }
+
 // serveWs handles websocket requests from the peer.
-func serveWs(w http.ResponseWriter, r *http.Request, ) {
+func serveWs(c buffalo.Context) {
+	w := c.Response()
+	r := c.Request()
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	//user := r.Context().Value("user").(models.User)
 	client := NewClient()
 	client.ws = conn
-	//client.addUser()
-
-	// subscribe to the main
-	go client.Subscribe()
-
-
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
 	go client.writePump()
 	go client.readPump()
+
+	//go client.broadcastThreads()
+
+}
+
+func (c *Client) broadcastThreads() {
+
+	currentIDs := []uuid.UUID{}
+
+	ticker := time.NewTicker(2 * time.Second)
+L:
+	for {
+		select {
+		case <-ticker.C:
+
+			ids := getIDs(c.user.Threads)
+
+			if reflect.DeepEqual(hashstructure.hash(ids), hashstructure.hash(currentIDs)) {
+				data := Data{
+					"threads",
+					c.user.Threads,
+					nil,
+				}
+				out, err := json.Marshal(data)
+
+				if err != nil {
+					errors := Data{
+						"errors",
+						"There was a problem marshaling threads",
+						nil,
+					}
+					errOut, _ := json.Marshal(errors)
+					c.out <- errOut
+				}
+				c.out <- out
+			}
+		case <-c.shutDown:
+			break L
+		}
+	}
+	return
+}
+
+func getIDs(t models.Threads) []uuid.UUID {
+	ids := []uuid.UUID{}
+	for _, v := range t {
+		ids = append(ids, v.ID)
+	}
+	return ids
 }

@@ -8,15 +8,14 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
 
-	"log"
 	"encoding/json"
+	"github.com/kris-nova/kubicorn/cutil/logger"
 )
 
 func UserMiddleware() buffalo.MiddlewareFunc {
 	return func(next buffalo.Handler) buffalo.Handler {
 		return func(c buffalo.Context) error {
 
-			fmt.Println("Hello world")
 			t := c.Request().Header.Get("Authorization")
 			if t != "" {
 				//TODO Actualy verify the token and sign the secret properly refernced in https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html
@@ -32,7 +31,6 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 
 					claims["username"] = claims["cognito:username"]
 
-					log.Println("I'm here s")
 					cognitoData := models.CognitoData{}
 					tmp, err := json.Marshal(claims)
 
@@ -65,8 +63,8 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 							return errors.WithStack(err)
 						}
 					}
-
-					c.Set("user", user)
+					logger.Info("setting user")
+					c.Set("user", *user)
 				} else {
 					return errors.WithStack(errors.New("The claims for this token we not valid"))
 				}
