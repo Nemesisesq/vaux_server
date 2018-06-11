@@ -12,14 +12,15 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID    `json:"id" db:"id"`
-	CreatedAt time.Time    `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at" db:"updated_at"`
-	Name      string       `json:"name" db:"name"`
-	Email     string       `json:"email" db:"email"`
-	Profile   nulls.String `json:"profile" db:"profile"`
-	Avatar    string       `json:"avatar" db:"avatar"`
-	Threads   Threads      `json:"threads" has_many:"threads" order_by:"updated_at asc"`
+	ID            uuid.UUID    `json:"id" db:"id"`
+	CreatedAt     time.Time    `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time    `json:"updated_at" db:"updated_at"`
+	Name          string       `json:"name" db:"name"`
+	Email         string       `json:"email" db:"email"`
+	Profile       nulls.String `json:"profile" db:"profile"`
+	Avatar        string       `json:"avatar" db:"avatar"`
+	OwnedThreads  Threads      `json:"threads" has_many:"threads" fk_id:"owner_id" order_by:"updated_at asc"`
+	JoinedThreads Threads      `json:"joined_threads" many_to_many:"thread_members" db:"-"`
 }
 
 // String is not required by pop and may be deleted

@@ -1,0 +1,8 @@
+<div class="page-header">
+  <h1>Edit ThreadMember</h1>
+</div>
+
+<%= form_for(threadMember, {action: threadMemberPath({ thread_member_id: threadMember.ID }), method: "PUT"}) { %>
+  <%= partial("thread_members/form.html") %>
+  <a href="<%= threadMemberPath({ thread_member_id: threadMember.ID }) %>" class="btn btn-warning" data-confirm="Are you sure?">Cancel</a>
+<% } %>

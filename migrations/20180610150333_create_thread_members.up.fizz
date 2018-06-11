@@ -1,0 +1,6 @@
+create_table("thread_members", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("thread_id", "uuid", {})
+	t.Column("user_id", "uuid", {})
+	t.Column("active", "bool", {})
+})

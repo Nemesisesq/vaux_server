@@ -63,7 +63,7 @@ func (v UsersResource) Show(c buffalo.Context) error {
 	user := &models.User{}
 
 	if c.Param("user_email") != "" {
-		err := tx.Find(user, c.Param("user_email"));
+		err := tx.Find(user, c.Param("user_email"))
 
 		if err != nil {
 			return c.Error(404, err)
@@ -71,7 +71,7 @@ func (v UsersResource) Show(c buffalo.Context) error {
 	}
 
 	// To find the User the parameter user_id is used.
-	err := tx.Find(user, c.Param("user_id"));
+	err := tx.Find(user, c.Param("user_id"))
 
 	if err != nil {
 		return c.Error(404, err)

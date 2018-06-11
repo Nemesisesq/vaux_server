@@ -8,6 +8,7 @@ import (
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
+	"github.com/pkg/errors"
 )
 
 type Thread struct {
@@ -23,6 +24,25 @@ type Thread struct {
 	OwnerID       uuid.UUID `json:"owner_id" db:"owner_id"`
 	Private       bool      `json:"private" db:"private"`
 	Active        bool      `json:"active" db:"active"`
+	Members       Users     `json:"members" many_to_many:"thread_members" db:"-"`
+}
+
+func (thread Thread) Join(u User) error {
+	tx, err := pop.Connect("database")
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	thread.Members = append(thread.Members, u)
+
+	tx.Eager().Update(&thread)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	// If there are no errors set a success message
+	// and redirect to the threads index page
+	return nil
 }
 
 // String is not required by pop and may be deleted

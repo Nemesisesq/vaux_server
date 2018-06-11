@@ -1,14 +1,16 @@
 package actions
 
 import (
-	"github.com/gobuffalo/buffalo"
-	"github.com/dgrijalva/jwt-go"
 	"fmt"
-	"github.com/nemesisesq/vaux_server/models"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/nemesisesq/vaux_server/models"
 	"github.com/pkg/errors"
 
 	"encoding/json"
+
 	log "github.com/sirupsen/logrus"
 )
 
@@ -27,7 +29,6 @@ func UserMiddleware() buffalo.MiddlewareFunc {
 				})
 				//TODO Check the token claims to make sure that they are valid
 				if claims, ok := token.Claims.(jwt.MapClaims); ok {
-
 
 					claims["username"] = claims["cognito:username"]
 

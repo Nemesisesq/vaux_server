@@ -1,21 +1,18 @@
 package chat
 
 import (
-	"time"
-	"github.com/gorilla/websocket"
-	"log"
-	"bytes"
-	"github.com/soveran/redisurl"
-	"github.com/nemesisesq/vaux_server/models"
-	"github.com/gomodule/redigo/redis"
-	"fmt"
-	"os"
-	"net/http"
-	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/uuid"
 	"encoding/json"
-	"reflect"
-	"github.com/mitchellh/hashstructure"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/gobuffalo/buffalo"
+	"github.com/gomodule/redigo/redis"
+	"github.com/gorilla/websocket"
+	"github.com/nemesisesq/vaux_server/models"
+	"github.com/soveran/redisurl"
 )
 
 const (
@@ -66,7 +63,7 @@ type Client struct {
 
 	// Buffered channel of outbound messages.
 	out chan []byte
-	in chan []byte
+	in  chan []byte
 
 	shutDown chan bool
 }
@@ -98,7 +95,7 @@ func (c *Client) Subscribe() {
 	c.pubSubConn.Subscribe(c.currentThread.ID)
 SUB:
 	for {
-		switch  v := c.pubSubConn.Receive().(type) {
+		switch v := c.pubSubConn.Receive().(type) {
 		case redis.Message:
 			c.out <- v.Data
 		case redis.Subscription:
@@ -175,6 +172,7 @@ func (c *Client) readPump() {
 	c.ws.SetReadDeadline(time.Now().Add(pongWait))
 	c.ws.SetPongHandler(func(string) error { c.ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
+		fmt.Println("read pump")
 		messageType, message, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -197,8 +195,9 @@ func (c *Client) readPump() {
 		fmt.Println(string(message))
 		c.processData(data)
 
-		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.in <- message
+		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
+		//c.in <- message
+		fmt.Println("sent a message")
 	}
 }
 
@@ -273,50 +272,4 @@ func serveWs(c buffalo.Context) {
 
 	//go client.broadcastThreads()
 
-}
-
-func (c *Client) broadcastThreads() {
-
-	currentIDs := []uuid.UUID{}
-
-	ticker := time.NewTicker(2 * time.Second)
-L:
-	for {
-		select {
-		case <-ticker.C:
-
-			ids := getIDs(c.user.Threads)
-
-			if reflect.DeepEqual(hashstructure.hash(ids), hashstructure.hash(currentIDs)) {
-				data := Data{
-					"threads",
-					c.user.Threads,
-					nil,
-				}
-				out, err := json.Marshal(data)
-
-				if err != nil {
-					errors := Data{
-						"errors",
-						"There was a problem marshaling threads",
-						nil,
-					}
-					errOut, _ := json.Marshal(errors)
-					c.out <- errOut
-				}
-				c.out <- out
-			}
-		case <-c.shutDown:
-			break L
-		}
-	}
-	return
-}
-
-func getIDs(t models.Threads) []uuid.UUID {
-	ids := []uuid.UUID{}
-	for _, v := range t {
-		ids = append(ids, v.ID)
-	}
-	return ids
 }

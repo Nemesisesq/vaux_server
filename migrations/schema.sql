@@ -94,6 +94,22 @@ CREATE TABLE sounds (
 ALTER TABLE sounds OWNER TO postgres;
 
 --
+-- Name: thread_members; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE thread_members (
+    id uuid NOT NULL,
+    thread_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    active boolean NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE thread_members OWNER TO postgres;
+
+--
 -- Name: threads; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -152,6 +168,14 @@ ALTER TABLE ONLY messages
 
 ALTER TABLE ONLY sounds
     ADD CONSTRAINT sounds_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: thread_members thread_members_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY thread_members
+    ADD CONSTRAINT thread_members_pkey PRIMARY KEY (id);
 
 
 --

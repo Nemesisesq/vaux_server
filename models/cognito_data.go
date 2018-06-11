@@ -16,4 +16,3 @@ type CognitoData struct {
 	Email               string `json:"email" bson:"email"`
 	JwtToken            string `json:"jwtToken" bson:"jwtToken"`
 }
-

@@ -1,0 +1,35 @@
+<div class="page-header">
+  <h1>ThreadMembers</h1>
+</div>
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= newThreadMembersPath() %>" class="btn btn-primary">Create New ThreadMember</a></li>
+</ul>
+
+<table class="table table-striped">
+  <thead>
+  <th>ThreadID</th>
+    <th>MemberID</th>
+    <th>Active</th>
+    <th>&nbsp;</th>
+  </thead>
+  <tbody>
+    <%= for (threadMember) in threadMembers { %>
+      <tr>
+      <td><%= threadMember.ThreadID %></td>
+        <td><%= threadMember.MemberID %></td>
+        <td><%= threadMember.Active %></td>
+        <td>
+          <div class="pull-right">
+            <a href="<%= threadMemberPath({ thread_member_id: threadMember.ID }) %>" class="btn btn-info">View</a>
+            <a href="<%= editThreadMemberPath({ thread_member_id: threadMember.ID }) %>" class="btn btn-warning">Edit</a>
+            <a href="<%= threadMemberPath({ thread_member_id: threadMember.ID }) %>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+          </div>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<div class="text-center">
+  <%= paginator(pagination) %>
+</div>

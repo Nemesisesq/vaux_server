@@ -1,11 +1,14 @@
 package chat
 
 import (
-	"github.com/gobuffalo/pop"
 	"log"
 
-	"github.com/nemesisesq/vaux_server/models"
+	"github.com/gobuffalo/pop"
+
 	"encoding/json"
+
+	"github.com/nemesisesq/vaux_server/models"
+	"github.com/gobuffalo/uuid"
 )
 
 func (c *Client) processData(d Data) {
@@ -36,7 +39,7 @@ func (c *Client) processData(d Data) {
 
 func SetUser(d Data, c *Client) {
 	tx, err := pop.Connect("development")
-	defer tx.Close()
+	//defer tx.Close()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -48,4 +51,56 @@ func SetUser(d Data, c *Client) {
 	}
 	c.user = *user
 	c.broadcastThreads()
+}
+
+func (c *Client) broadcastThreads() {
+
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Panic(err)
+	}
+	threads := models.Threads{}
+
+	err = tx.Eager().Where("owner_id  =  ? ", c.user.ID).All(&threads)
+
+	if err != nil {
+		log.Panic(err)
+	}
+	tu := models.User{}
+	err = tx.Eager().Where("id = ?", c.user.ID).First(&tu)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	//ids := getIDs(threads)
+
+	threads = append(tu.OwnedThreads, tu.JoinedThreads...)
+
+	data := Data{
+		"threads",
+		threads,
+		nil,
+	}
+	out, err := json.Marshal(data)
+
+	if err != nil {
+		errors := Data{
+			"errors",
+			"There was a problem marshaling threads",
+			nil,
+		}
+		errOut, _ := json.Marshal(errors)
+		c.out <- errOut
+	}
+	c.out <- out
+
+}
+
+func getIDs(t models.Threads) []uuid.UUID {
+	ids := []uuid.UUID{}
+	for _, v := range t {
+		ids = append(ids, v.ID)
+	}
+	return ids
 }

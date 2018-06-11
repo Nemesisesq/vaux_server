@@ -1,17 +1,18 @@
 package actions
 
 import (
+	"net/http"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
+	"github.com/gobuffalo/buffalo/middleware/csrf"
+	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/buffalo/middleware/ssl"
 	"github.com/gobuffalo/envy"
-	"github.com/unrolled/secure"
-	"github.com/gobuffalo/buffalo/middleware/i18n"
 	"github.com/gobuffalo/packr"
-	"github.com/nemesisesq/vaux_server/models"
 	"github.com/nemesisesq/vaux_server/chat"
-	"net/http"
-	"github.com/gobuffalo/buffalo/middleware/csrf"
+	"github.com/nemesisesq/vaux_server/models"
+	"github.com/unrolled/secure"
 )
 
 // ENV is used to help switch settings based on where the
@@ -48,7 +49,6 @@ func App() *buffalo.App {
 		// Remove to disable this.
 		app.Use(middleware.PopTransaction(models.DB))
 
-
 		// Setup and use translations:
 		var err error
 		if T, err = i18n.New(packr.NewBox("../locales"), "en-US"); err != nil {
@@ -63,7 +63,7 @@ func App() *buffalo.App {
 
 		app.GET("/connect", chat.Connect)
 
-		app.GET("/verify", func (c buffalo.Context) error{
+		app.GET("/verify", func(c buffalo.Context) error {
 			return c.Render(http.StatusOK, r.JSON(map[string]string{"data": "Looks like everything is working"}))
 		})
 
@@ -73,7 +73,7 @@ func App() *buffalo.App {
 		app.Resource("/message_sounds", MessageSoundsResource{})
 		app.Resource("/messages", MessagesResource{})
 
-		
+		app.Resource("/thread_members", ThreadMembersResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

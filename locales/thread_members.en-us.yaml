@@ -1,0 +1,6 @@
+- id: "thread_member.created.success"
+  translation: "ThreadMember was successfully created."
+- id: "thread_member.updated.success"
+  translation: "ThreadMember was successfully updated."
+- id: "thread_member.destroyed.success"
+  translation: "ThreadMember was successfully destroyed."
