@@ -92,7 +92,16 @@ func (c *Client) Subscribe() {
 
 	c.pubSubConn = &redis.PubSubConn{Conn: c.redisConn}
 
-	c.pubSubConn.Subscribe(c.currentThread.ID)
+	threads, err := GetThreads(c)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	for _, v := range threads {
+		c.pubSubConn.Subscribe(fmt.Sprintf("thread.%v", v.ID))
+	}
+
 SUB:
 	for {
 		switch v := c.pubSubConn.Receive().(type) {
@@ -112,8 +121,18 @@ func (c *Client) Publish() {
 PUB:
 	for {
 		select {
-		case message := <-c.in:
-			c.pubSubConn.Conn.Do("PUBLISH", c.currentThread.ID, string(message))
+		case data:= <-c.in:
+
+			d := Data{}
+
+			err := json.Unmarshal(data, d)
+
+			if err != nil {
+				log.Panic(err)
+			}
+
+			
+			c.pubSubConn.Conn.Do("PUBLISH", fmt.Sprintf("thread.%v", d.ThreadID), d.Paylaod)
 
 		case <-c.shutDown:
 			break PUB
@@ -126,7 +145,7 @@ PUB:
 
 func (c *Client) Unsubscribe() {
 
-	c.pubSubConn.Unsubscribe()
+	//c.pubSubConn.Unsubscribe()
 
 }
 

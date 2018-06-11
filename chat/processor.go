@@ -16,24 +16,38 @@ func (c *Client) processData(d Data) {
 	case "SET_USER":
 		SetUser(d, c)
 	case "CREATE_THREAD":
-		tx, err := pop.Connect("development")
+		createThread(d, c)
+	case "ADD_MESSAGE":
+		message, err := json.Marshal(d)
 
 		if err != nil {
 			log.Panic(err)
 		}
-		tmp, err := json.Marshal(d.Paylaod)
-		// Allocate an empty User
-		thread := &models.Thread{}
 
-		err = json.Unmarshal(tmp, &thread)
+		c.in <- message
+	}
+}
 
-		thread.Owner = c.user
-		thread.OwnerID = c.user.ID
-
-		err = tx.Create(thread)
-		if err != nil {
-			log.Panic(err)
-		}
+func createThread(d Data, c *Client) {
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Panic(err)
+	}
+	tmp, err := json.Marshal(d.Paylaod)
+	if err != nil {
+		log.Panic(err)
+	}
+	// Allocate an empty User
+	thread := &models.Thread{}
+	err = json.Unmarshal(tmp, &thread)
+	if err != nil {
+		log.Panic(err)
+	}
+	thread.Owner = c.user
+	thread.OwnerID = c.user.ID
+	err = tx.Create(thread)
+	if err != nil {
+		log.Panic(err)
 	}
 }
 
@@ -55,27 +69,7 @@ func SetUser(d Data, c *Client) {
 
 func (c *Client) broadcastThreads() {
 
-	tx, err := pop.Connect("development")
-	if err != nil {
-		log.Panic(err)
-	}
-	threads := models.Threads{}
-
-	err = tx.Eager().Where("owner_id  =  ? ", c.user.ID).All(&threads)
-
-	if err != nil {
-		log.Panic(err)
-	}
-	tu := models.User{}
-	err = tx.Eager().Where("id = ?", c.user.ID).First(&tu)
-
-	if err != nil {
-		log.Panic(err)
-	}
-
-	//ids := getIDs(threads)
-
-	threads = append(tu.OwnedThreads, tu.JoinedThreads...)
+	threads, err := GetThreads(c)
 
 	data := Data{
 		"threads",
@@ -95,6 +89,26 @@ func (c *Client) broadcastThreads() {
 	}
 	c.out <- out
 
+}
+
+func GetThreads(c *Client) (models.Threads, error) {
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Panic(err)
+	}
+	threads := models.Threads{}
+	err = tx.Eager().Where("owner_id  =  ? ", c.user.ID).All(&threads)
+	if err != nil {
+		log.Panic(err)
+	}
+	tu := models.User{}
+	err = tx.Eager().Where("id = ?", c.user.ID).First(&tu)
+	if err != nil {
+		log.Panic(err)
+	}
+	//ids := getIDs(threads)
+	threads = append(tu.OwnedThreads, tu.JoinedThreads...)
+	return threads, err
 }
 
 func getIDs(t models.Threads) []uuid.UUID {
