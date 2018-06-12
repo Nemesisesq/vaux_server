@@ -3,7 +3,6 @@ package chat
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/nemesisesq/vaux_server/models"
 	"github.com/soveran/redisurl"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -52,9 +52,9 @@ type Data struct {
 type Client struct {
 	user models.User
 
-	redisConn redis.Conn
+	subRedisConn redis.Conn
 
-	pubSubConn *redis.PubSubConn
+	pubRedisConn redis.Conn
 
 	// The websocket connection.
 	ws *websocket.Conn
@@ -75,14 +75,18 @@ func NewClient() Client {
 	c.in = make(chan []byte)
 	c.shutDown = make(chan bool, 1)
 
-	redisConn, err := redisurl.Connect()
+	subRedisConn, err := redisurl.Connect()
+	if err != nil {
+		panic(err)
+	}
+	pubRedisConn, err := redisurl.Connect()
 
 	if err != nil {
 		panic(err)
 	}
-	c.redisConn = redisConn
 
-	//c.addUser()
+	c.subRedisConn = subRedisConn
+	c.pubRedisConn = pubRedisConn
 
 	return c
 
@@ -90,7 +94,7 @@ func NewClient() Client {
 
 func (c *Client) Subscribe() {
 
-	c.pubSubConn = &redis.PubSubConn{Conn: c.redisConn}
+	sub := &redis.PubSubConn{Conn: c.subRedisConn}
 
 	threads, err := GetThreads(c)
 
@@ -99,14 +103,20 @@ func (c *Client) Subscribe() {
 	}
 
 	for _, v := range threads {
-		c.pubSubConn.Subscribe(fmt.Sprintf("thread.%v", v.ID))
+		s := fmt.Sprintf("thread.%v", v.ID.String())
+		sub.Subscribe(s)
 	}
 
 SUB:
 	for {
-		switch v := c.pubSubConn.Receive().(type) {
+		switch v := sub.Receive().(type) {
 		case redis.Message:
+			log.Info(v.Data)
+
+
+
 			c.out <- v.Data
+
 		case redis.Subscription:
 			break
 		case error:
@@ -114,25 +124,33 @@ SUB:
 			return
 		}
 	}
-
 }
 
 func (c *Client) Publish() {
+
+
+
+	pub := &redis.PubSubConn{Conn: c.pubRedisConn}
 PUB:
 	for {
 		select {
-		case data:= <-c.in:
+		case data := <-c.in:
 
 			d := Data{}
 
-			err := json.Unmarshal(data, d)
+			err := json.Unmarshal(data, &d)
 
 			if err != nil {
 				log.Panic(err)
 			}
 
-			
-			c.pubSubConn.Conn.Do("PUBLISH", fmt.Sprintf("thread.%v", d.ThreadID), d.Paylaod)
+			//tmp, err := json.Marshal(d.Paylaod)
+
+			channel := fmt.Sprintf("thread.%v", d.ThreadID)
+			_, err = pub.Conn.Do("PUBLISH", channel, data)
+			if err != nil {
+				log.Panic(err)
+			}
 
 		case <-c.shutDown:
 			break PUB
@@ -241,6 +259,8 @@ func (c *Client) writePump() {
 				return
 			}
 
+			fmt.Println(string(message))
+
 			w, err := c.ws.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return
@@ -266,6 +286,7 @@ func (c *Client) writePump() {
 		}
 	}
 }
+
 func Connect(c buffalo.Context) error {
 	serveWs(c)
 	return nil
