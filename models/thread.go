@@ -9,6 +9,7 @@ import (
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
+	"log"
 )
 
 type Thread struct {
@@ -80,4 +81,28 @@ func (t *Thread) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (t *Thread) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+func (t *Thread) AddMessage( message Message) error {
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	t.Messages = append(t.Messages, message)
+
+	err = tx.Eager().Update(&t)
+
+	return err
+}
+
+func GetThread(id string) (thread Thread) {
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	tx.Find(thread, id)
+
+	return thread
 }

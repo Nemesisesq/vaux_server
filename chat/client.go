@@ -111,12 +111,7 @@ SUB:
 	for {
 		switch v := sub.Receive().(type) {
 		case redis.Message:
-			log.Info(v.Data)
-
-
-
 			c.out <- v.Data
-
 		case redis.Subscription:
 			break
 		case error:
@@ -144,9 +139,18 @@ PUB:
 				log.Panic(err)
 			}
 
-			//tmp, err := json.Marshal(d.Paylaod)
+			tmp, err := json.Marshal(d.Paylaod)
+			message := &models.Message{}
+			err = json.Unmarshal(tmp, &message)
 
 			channel := fmt.Sprintf("thread.%v", d.ThreadID)
+
+			thread := models.GetThread(d.ThreadID.(string))
+
+			thread.AddMessage(*message)
+
+
+
 			_, err = pub.Conn.Do("PUBLISH", channel, data)
 			if err != nil {
 				log.Panic(err)
@@ -209,7 +213,6 @@ func (c *Client) readPump() {
 	c.ws.SetReadDeadline(time.Now().Add(pongWait))
 	c.ws.SetPongHandler(func(string) error { c.ws.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
-		fmt.Println("read pump")
 		messageType, message, err := c.ws.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
@@ -229,12 +232,10 @@ func (c *Client) readPump() {
 			panic(err)
 		}
 
-		fmt.Println(string(message))
 		c.processData(data)
 
 		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		//c.in <- message
-		fmt.Println("sent a message")
 	}
 }
 
@@ -258,9 +259,6 @@ func (c *Client) writePump() {
 				c.ws.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-
-			fmt.Println(string(message))
-
 			w, err := c.ws.NextWriter(websocket.TextMessage)
 			if err != nil {
 				return

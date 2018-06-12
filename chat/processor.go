@@ -71,7 +71,7 @@ func SetUser(d Data, c *Client) {
 
 func (c *Client) broadcastThreads() {
 
-	threads, err := GetThreads(c)
+	threads, err := GetAllThreads(c)
 
 	data := Data{
 		"threads",
@@ -92,8 +92,18 @@ func (c *Client) broadcastThreads() {
 	c.out <- out
 
 }
+func GetAllThreads(c *Client) (models.Threads, error) {
+	tx, err := pop.Connect("development")
+	if err != nil {
+		log.Panic(err)
+	}
+	threads := models.Threads{}
+	tx.All(&threads)
 
+	return threads, nil
+}
 func GetThreads(c *Client) (models.Threads, error) {
+
 	tx, err := pop.Connect("development")
 	if err != nil {
 		log.Panic(err)
