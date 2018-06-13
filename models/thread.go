@@ -10,6 +10,7 @@ import (
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"log"
+	"github.com/gobuffalo/envy"
 )
 
 type Thread struct {
@@ -83,26 +84,20 @@ func (t *Thread) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
 }
 
-func (t *Thread) AddMessage( message Message) error {
-	tx, err := pop.Connect("development")
+
+
+func GetThread(id string) Thread {
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
 	if err != nil {
 		log.Panic(err)
 	}
 
-	t.Messages = append(t.Messages, message)
+	thread := Thread{}
 
-	err = tx.Eager().Update(&t)
+	err = tx.Find(&thread, id)
 
-	return err
-}
-
-func GetThread(id string) (thread Thread) {
-	tx, err := pop.Connect("development")
 	if err != nil {
 		log.Panic(err)
 	}
-
-	tx.Find(thread, id)
-
 	return thread
 }

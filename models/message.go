@@ -8,6 +8,8 @@ import (
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
+	"github.com/gobuffalo/envy"
+	"log"
 )
 
 type Message struct {
@@ -17,9 +19,9 @@ type Message struct {
 	Text      nulls.String `json:"text" db:"text"`
 	Image     nulls.String `json:"image" db:"image"`
 	Sounds    Sounds       `json:"sound" db:"-" many_to_many:"message_sounds"`
-	User      User         `json:"user" db:"-" belongs_to:"user"`
+	User      User         `json:"user" belongs_to:"user"`
 	UserID    uuid.UUID    `json:"user_id" db:"user_id"`
-	Thread    Thread       `json:"thread" db:"-" belongs_to:"thread"`
+	Thread    Thread       `json:"thread" belongs_to:"thread"`
 	ThreadID  uuid.UUID    `json:"thread_id" db:"thread_id"`
 }
 
@@ -54,4 +56,19 @@ func (m *Message) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (m *Message) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+func (message *Message) Create() error {
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
+	if err != nil {
+		log.Panic(err)
+	}
+
+	err = tx.Create(message)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	return err
+
 }

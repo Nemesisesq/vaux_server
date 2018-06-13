@@ -9,6 +9,7 @@ import (
 
 	"github.com/nemesisesq/vaux_server/models"
 	"github.com/gobuffalo/uuid"
+	"github.com/gobuffalo/envy"
 )
 
 func (c *Client) processData(d Data) {
@@ -29,7 +30,7 @@ func (c *Client) processData(d Data) {
 }
 
 func createThread(d Data, c *Client) {
-	tx, err := pop.Connect("development")
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -52,7 +53,7 @@ func createThread(d Data, c *Client) {
 }
 
 func SetUser(d Data, c *Client) {
-	tx, err := pop.Connect("development")
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
 	//defer tx.Close()
 	if err != nil {
 		log.Panic(err)
@@ -93,7 +94,7 @@ func (c *Client) broadcastThreads() {
 
 }
 func GetAllThreads(c *Client) (models.Threads, error) {
-	tx, err := pop.Connect("development")
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
 	if err != nil {
 		log.Panic(err)
 	}
@@ -104,7 +105,7 @@ func GetAllThreads(c *Client) (models.Threads, error) {
 }
 func GetThreads(c *Client) (models.Threads, error) {
 
-	tx, err := pop.Connect("development")
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
 	if err != nil {
 		log.Panic(err)
 	}

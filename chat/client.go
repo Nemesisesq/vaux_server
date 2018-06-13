@@ -139,15 +139,32 @@ PUB:
 				log.Panic(err)
 			}
 
-			tmp, err := json.Marshal(d.Paylaod)
+			tmp, err := json.Marshal(d.Paylaod.([]interface{})[0])
+
+			if err != nil {
+				log.Panic(err)
+			}
 			message := &models.Message{}
 			err = json.Unmarshal(tmp, &message)
+
+			if err != nil {
+				log.Panic(err)
+			}
 
 			channel := fmt.Sprintf("thread.%v", d.ThreadID)
 
 			thread := models.GetThread(d.ThreadID.(string))
 
-			thread.AddMessage(*message)
+			message.ThreadID = thread.ID
+			//message.Thread = thread
+
+			err = message.Create()
+
+			if err != nil {
+				log.Panic(err)
+			}
+
+			//thread.AddMessage(*message)
 
 
 
