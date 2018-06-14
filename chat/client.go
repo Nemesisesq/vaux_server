@@ -96,7 +96,7 @@ func (c *Client) Subscribe() {
 
 	sub := &redis.PubSubConn{Conn: c.subRedisConn}
 
-	threads, err := GetThreads(c)
+	threads, err := GetAllThreads(c)
 
 	if err != nil {
 		log.Panic(err)
@@ -109,21 +109,23 @@ func (c *Client) Subscribe() {
 
 SUB:
 	for {
+
 		switch v := sub.Receive().(type) {
 		case redis.Message:
 			c.out <- v.Data
 		case redis.Subscription:
 			break
 		case error:
+
 			break SUB
 			return
+		default:
+			log.Info("no data")
 		}
 	}
 }
 
 func (c *Client) Publish() {
-
-
 
 	pub := &redis.PubSubConn{Conn: c.pubRedisConn}
 PUB:
@@ -155,8 +157,10 @@ PUB:
 
 			thread := models.GetThread(d.ThreadID.(string))
 
+			message.User = c.user
+			message.UserID = c.user.ID
 			message.ThreadID = thread.ID
-			//message.Thread = thread
+			message.Thread = thread
 
 			err = message.Create()
 
@@ -165,8 +169,6 @@ PUB:
 			}
 
 			//thread.AddMessage(*message)
-
-
 
 			_, err = pub.Conn.Do("PUBLISH", channel, data)
 			if err != nil {

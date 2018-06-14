@@ -64,7 +64,7 @@ func (message *Message) Create() error {
 		log.Panic(err)
 	}
 
-	err = tx.Create(message)
+	err = tx.Eager().Create(message)
 	if err != nil {
 		log.Panic(err)
 	}
