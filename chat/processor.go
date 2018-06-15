@@ -20,11 +20,9 @@ func (c *Client) processData(d Data) {
 		createThread(d, c)
 	case "ADD_MESSAGE":
 		message, err := json.Marshal(d)
-
 		if err != nil {
 			log.Panic(err)
 		}
-
 		c.in <- message
 	}
 }
@@ -62,7 +60,15 @@ func SetUser(d Data, c *Client) {
 	user := &models.User{}
 	err = tx.Where("email = ?", d.Paylaod).First(user)
 	if err != nil {
-		log.Panic(err)
+		data := Data{
+			"bad_user",
+			"There is no user please sign back in.",
+			nil,
+		}
+
+		out, _ := json.Marshal(data)
+
+		c.out <- out
 	}
 	c.user = *user
 	c.broadcastThreads()
