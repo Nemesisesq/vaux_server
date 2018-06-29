@@ -75,6 +75,10 @@ func App() *buffalo.App {
 
 		app.Resource("/thread_members", ThreadMembersResource{})
 		app.Resource("/profiles", ProfilesResource{})
+
+		app.POST("/auth/login", AuthLogin)
+		app.POST("/auth/signup", AuthSignup)
+		app.POST("/auth/reset_password", AuthResetPassword)
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

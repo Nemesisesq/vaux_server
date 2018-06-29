@@ -33,8 +33,8 @@ type User struct {
 	Avatar        string       `json:"avatar" db:"avatar"`
 	OwnedThreads  Threads      `json:"threads" has_many:"threads" fk_id:"owner_id" order_by:"updated_at asc"`
 	JoinedThreads Threads      `json:"joined_threads" many_to_many:"thread_members" db:"-"`
-	Profile      Profile      `json:"profile,omitempty" has_one:"profile"`
-	ProfileID    uuid.UUID    `db:"profile_id" json:"-"`
+	Profile       Profile      `json:"profile,omitempty" has_one:"profile"`
+	ProfileID     uuid.UUID    `db:"profile_id" json:"-"`
 }
 
 // String is not required by pop and may be deleted
