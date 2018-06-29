@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"time"
 
+	"log"
+
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
-	"log"
-	"github.com/gobuffalo/envy"
 )
 
 type Thread struct {
@@ -83,8 +84,6 @@ func (t *Thread) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 func (t *Thread) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
 }
-
-
 
 func GetThread(id string) Thread {
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))

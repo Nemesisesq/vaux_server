@@ -1,0 +1,6 @@
+- id: "profile.created.success"
+  translation: "Profile was successfully created."
+- id: "profile.updated.success"
+  translation: "Profile was successfully updated."
+- id: "profile.destroyed.success"
+  translation: "Profile was successfully destroyed."

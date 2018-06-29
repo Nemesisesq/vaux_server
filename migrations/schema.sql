@@ -67,6 +67,22 @@ CREATE TABLE messages (
 ALTER TABLE messages OWNER TO postgres;
 
 --
+-- Name: profiles; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE profiles (
+    id uuid NOT NULL,
+    first_name character varying(255) NOT NULL,
+    last_name character varying(255) NOT NULL,
+    user_id uuid NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE profiles OWNER TO postgres;
+
+--
 -- Name: schema_migration; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -137,8 +153,11 @@ CREATE TABLE users (
     id uuid NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    profile text,
+    password_hash character varying(255) NOT NULL,
+    refresh_token character varying(255) NOT NULL,
+    admin boolean NOT NULL,
     avatar character varying(255) NOT NULL,
+    profile_id uuid NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -160,6 +179,14 @@ ALTER TABLE ONLY message_sounds
 
 ALTER TABLE ONLY messages
     ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: profiles profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY profiles
+    ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
 
 
 --

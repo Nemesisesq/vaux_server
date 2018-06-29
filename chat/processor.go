@@ -7,9 +7,9 @@ import (
 
 	"encoding/json"
 
-	"github.com/nemesisesq/vaux_server/models"
-	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/uuid"
+	"github.com/nemesisesq/vaux_server/models"
 )
 
 func (c *Client) processData(d Data) {
@@ -105,7 +105,7 @@ func GetAllThreads(c *Client) (models.Threads, error) {
 		log.Panic(err)
 	}
 	threads := models.Threads{}
-	tx.All(&threads)
+	tx.Eager().All(&threads)
 
 	return threads, nil
 }

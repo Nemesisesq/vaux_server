@@ -213,3 +213,4 @@ func (v UsersResource) Destroy(c buffalo.Context) error {
 	// Redirect to the users index page
 	return c.Render(200, r.Auto(c, user))
 }
+

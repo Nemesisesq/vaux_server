@@ -1,0 +1,8 @@
+<div class="page-header">
+  <h1>Edit Profile</h1>
+</div>
+
+<%= form_for(profile, {action: profilePath({ profile_id: profile.ID }), method: "PUT"}) { %>
+  <%= partial("profiles/form.html") %>
+  <a href="<%= profilePath({ profile_id: profile.ID }) %>" class="btn btn-warning" data-confirm="Are you sure?">Cancel</a>
+<% } %>

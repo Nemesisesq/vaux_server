@@ -58,7 +58,7 @@ func App() *buffalo.App {
 
 		app.Use(T.Middleware())
 
-		app.Use(UserMiddleware())
+		app.Use(ValidateTokensFromHeader)
 		app.GET("/", HomeHandler)
 
 		app.GET("/connect", chat.Connect)
@@ -74,6 +74,7 @@ func App() *buffalo.App {
 		app.Resource("/messages", MessagesResource{})
 
 		app.Resource("/thread_members", ThreadMembersResource{})
+		app.Resource("/profiles", ProfilesResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

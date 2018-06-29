@@ -11,8 +11,8 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/gorilla/websocket"
 	"github.com/nemesisesq/vaux_server/models"
-	"github.com/soveran/redisurl"
 	log "github.com/sirupsen/logrus"
+	"github.com/soveran/redisurl"
 )
 
 const (

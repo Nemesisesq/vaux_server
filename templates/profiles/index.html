@@ -1,0 +1,35 @@
+<div class="page-header">
+  <h1>Profiles</h1>
+</div>
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= newProfilesPath() %>" class="btn btn-primary">Create New Profile</a></li>
+</ul>
+
+<table class="table table-striped">
+  <thead>
+  <th>FirstName</th>
+    <th>LastName</th>
+    <th>UserID</th>
+    <th>&nbsp;</th>
+  </thead>
+  <tbody>
+    <%= for (profile) in profiles { %>
+      <tr>
+      <td><%= profile.FirstName %></td>
+        <td><%= profile.LastName %></td>
+        <td><%= profile.UserID %></td>
+        <td>
+          <div class="pull-right">
+            <a href="<%= profilePath({ profile_id: profile.ID }) %>" class="btn btn-info">View</a>
+            <a href="<%= editProfilePath({ profile_id: profile.ID }) %>" class="btn btn-warning">Edit</a>
+            <a href="<%= profilePath({ profile_id: profile.ID }) %>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+          </div>
+        </td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<div class="text-center">
+  <%= paginator(pagination) %>
+</div>

@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"time"
 
+	"log"
+
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
-	"github.com/gobuffalo/envy"
-	"log"
 )
 
 type Message struct {
