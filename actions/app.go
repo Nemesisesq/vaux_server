@@ -56,17 +56,41 @@ func App() *buffalo.App {
 
 		}
 
+
+
 		app.Use(T.Middleware())
 
-		app.Use(ValidateTokensFromHeader)
+		api := app.Group("/api")
+		//api.Use(ValidateTokensFromHeader)
+
+
+
+
 		app.GET("/", HomeHandler)
 
-		app.GET("/connect", chat.Connect)
 
-		app.GET("/verify", func(c buffalo.Context) error {
-			return c.Render(http.StatusOK, r.JSON(map[string]string{"data": "Looks like everything is working"}))
-		})
+		app.GET("/verify", ValidateTokensFromHeader(func(c buffalo.Context) error {
 
+			u :=  c.Value("user")
+			return c.Render(http.StatusOK, r.JSON(u))
+		}))
+
+		//api endpoints auth locked
+		api.GET("/connect", chat.Connect)
+		api.Resource("/sounds", SoundsResource{})
+		api.Resource("/users", UsersResource{})
+		api.Resource("/threads", ThreadsResource{})
+		api.Resource("/message_sounds", MessageSoundsResource{})
+		api.Resource("/messages", MessagesResource{})
+
+		api.Resource("/thread_members", ThreadMembersResource{})
+		api.Resource("/profiles", ProfilesResource{})
+
+		app.POST("/auth/login", AuthLogin)
+		app.POST("/auth/signup", AuthSignup)
+		app.POST("/auth/reset_password", AuthResetPassword)
+
+		//public endpoints
 		app.Resource("/sounds", SoundsResource{})
 		app.Resource("/users", UsersResource{})
 		app.Resource("/threads", ThreadsResource{})
@@ -76,9 +100,6 @@ func App() *buffalo.App {
 		app.Resource("/thread_members", ThreadMembersResource{})
 		app.Resource("/profiles", ProfilesResource{})
 
-		app.POST("/auth/login", AuthLogin)
-		app.POST("/auth/signup", AuthSignup)
-		app.POST("/auth/reset_password", AuthResetPassword)
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

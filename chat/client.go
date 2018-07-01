@@ -112,7 +112,12 @@ SUB:
 
 		switch v := sub.Receive().(type) {
 		case redis.Message:
-			c.out <- v.Data
+			d := &Data{Paylaod:v.Data, ThreadID:v.Channel, Type:"ADD_MESSAGE"}
+			tmp, err := json.Marshal(d)
+			if err != nil {
+				panic(err)
+			}
+			c.out <- tmp
 		case redis.Subscription:
 			break
 		case error:

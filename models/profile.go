@@ -7,7 +7,6 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
-	"github.com/gobuffalo/validate/validators"
 )
 
 type Profile struct {
@@ -38,8 +37,8 @@ func (p Profiles) String() string {
 // This method is not required and may be deleted.
 func (p *Profile) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: p.FirstName, Name: "FirstName"},
-		&validators.StringIsPresent{Field: p.LastName, Name: "LastName"},
+		//&validators.StringIsPresent{Field: p.FirstName, Name: "FirstName"},
+		//&validators.StringIsPresent{Field: p.LastName, Name: "LastName"},
 	), nil
 }
 

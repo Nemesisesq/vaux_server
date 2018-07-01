@@ -1,6 +1,6 @@
 create_table("profiles", func(t) {
 	t.Column("id", "uuid", {"primary": true})
-	t.Column("first_name", "string", {})
-	t.Column("last_name", "string", {})
+	t.Column("first_name", "string", {"null":true})
+	t.Column("last_name", "string", {"null": true})
 	t.Column("user_id", "uuid", {})
 })

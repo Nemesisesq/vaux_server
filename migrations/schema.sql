@@ -72,8 +72,8 @@ ALTER TABLE messages OWNER TO postgres;
 
 CREATE TABLE profiles (
     id uuid NOT NULL,
-    first_name character varying(255) NOT NULL,
-    last_name character varying(255) NOT NULL,
+    first_name character varying(255),
+    last_name character varying(255),
     user_id uuid NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
@@ -151,13 +151,13 @@ ALTER TABLE threads OWNER TO postgres;
 
 CREATE TABLE users (
     id uuid NOT NULL,
-    name character varying(255) NOT NULL,
+    name character varying(255),
     email character varying(255) NOT NULL,
     password_hash character varying(255) NOT NULL,
-    refresh_token character varying(255) NOT NULL,
-    admin boolean NOT NULL,
-    avatar character varying(255) NOT NULL,
-    profile_id uuid NOT NULL,
+    refresh_token character varying(255),
+    is_admin boolean DEFAULT false NOT NULL,
+    avatar character varying(255),
+    profile_id uuid,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );

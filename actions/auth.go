@@ -6,8 +6,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/gobuffalo/pop"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/mitchellh/mapstructure"
+	"time"
 )
+
+type D struct {
+	i interface{} `json:"i"`
+}
 
 // AuthLogin default implementation.
 func AuthLogin(c buffalo.Context) error {
@@ -23,28 +27,40 @@ func AuthLogin(c buffalo.Context) error {
 		return errors.WithStack(errors.New("no transaction found"))
 	}
 
-	err := tx.Where("username =  ?", userForm.Email).First(userForm)
+	u := &models.User{}
+	err := tx.Where("email =  ?", userForm.Email).First(u)
 
 	if err != nil {
 		return c.Error(404, err)
 	}
 
-	ph, err := bcrypt.GenerateFromPassword([]byte(userForm.Password), bcrypt.DefaultCost)
+	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(userForm.Password))
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	if string(ph) != userForm.PasswordHash {
-		c.Render(200, r.JSON(errors.New("password is incorrect")))
-	}
-	var claims map[string]interface{}
-	mapstructure.Decode(userForm.User, claims)
+	twoWeeks := time.Now().Add(2 * 7 * 24 * time.Hour)
+	claims := getJWSClaims(*u, twoWeeks)
+
+	refreshToken, err := generateJwtToken(claims)
+
+
+	u.RefreshToken.String = string(refreshToken)
+
+	tx.Save(u)
+
+	twoHours := time.Now().Add(2 * time.Hour)
+	claims = getJWSClaims(*u, twoHours)
 
 	jwt, err := generateJwtToken(claims)
 
-	return c.Render(200, r.JSON(map[string]interface{}{
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return c.Render(200, r.Auto(c, map[string]interface{}{
 		"status": "successfully logged in",
-		"jwt":    jwt,
+		"jwt":    string(jwt),
 	}))
 }
 

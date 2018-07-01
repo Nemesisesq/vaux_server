@@ -81,7 +81,7 @@ func getUIDFromJWT(token string) string {
 }
 func validateJwtToken(token []byte) error {
 	box := packr.NewBox("../keys")
-	publicKey := box.Bytes("public.pem")
+	publicKey := box.Bytes("key.pub")
 	rsaPublicKey, err := crypto.ParseRSAPublicKeyFromPEM(publicKey)
 	if err != nil {
 		return err
@@ -128,7 +128,7 @@ func getJWSClaims(user models.User, expiry time.Time) jws.Claims {
 // generateJwtToken will generate and return the JWT token with the claims
 func generateJwtToken(claims jws.Claims) ([]byte, error) {
 	box := packr.NewBox("../keys")
-	privateKey := box.Bytes("private.pem")
+	privateKey := box.Bytes("key.pem")
 	rsaPrivateKey, err := crypto.ParseRSAPrivateKeyFromPEM(privateKey)
 	if err != nil {
 		log.Println(err)
