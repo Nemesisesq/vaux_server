@@ -112,12 +112,8 @@ SUB:
 
 		switch v := sub.Receive().(type) {
 		case redis.Message:
-			d := &Data{Paylaod:v.Data, ThreadID:v.Channel, Type:"ADD_MESSAGE"}
-			tmp, err := json.Marshal(d)
-			if err != nil {
-				panic(err)
-			}
-			c.out <- tmp
+
+			c.out <- v.Data
 		case redis.Subscription:
 			break
 		case error:
@@ -174,6 +170,16 @@ PUB:
 			}
 
 			//thread.AddMessage(*message)
+
+			//Publish the message
+
+
+			if err != nil {
+				panic(err)
+			}
+			d.Paylaod = []interface{}{ message }
+
+			data, err = json.Marshal(d)
 
 			_, err = pub.Conn.Do("PUBLISH", channel, data)
 			if err != nil {
