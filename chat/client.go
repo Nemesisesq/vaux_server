@@ -169,6 +169,9 @@ PUB:
 				log.Panic(err)
 			}
 
+			j, err := json.Marshal(message)
+
+			outString := string(j)
 			//thread.AddMessage(*message)
 
 			//Publish the message
@@ -177,7 +180,7 @@ PUB:
 			if err != nil {
 				panic(err)
 			}
-			d.Paylaod = []interface{}{ message }
+			d.Paylaod = []interface{}{outString}
 
 			data, err = json.Marshal(d)
 
