@@ -61,6 +61,7 @@ func AuthLogin(c buffalo.Context) error {
 	return c.Render(200, r.Auto(c, map[string]interface{}{
 		"status": "successfully logged in",
 		"jwt":    string(jwt),
+		"user" : u,
 	}))
 }
 
