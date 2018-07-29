@@ -72,8 +72,8 @@ func SetUser(d Data, c *Client) {
 	}
 	c.user = *user
 	c.broadcastThreads()
-	go c.Subscribe()
-	go c.Publish()
+	//go c.Subscribe()
+	//go c.Publish()
 }
 
 func (c *Client) broadcastThreads() {

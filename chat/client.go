@@ -159,7 +159,7 @@ PUB:
 			thread := models.GetThread(d.ThreadID.(string))
 
 			message.User = c.user
-			message.UserID = c.user.ID
+			message.UserID = message.User.ID
 			message.ThreadID = thread.ID
 			message.Thread = thread
 
@@ -338,6 +338,8 @@ func serveWs(c buffalo.Context) {
 
 	// Allow collection of memory referenced by the caller by doing all work in
 	// new goroutines.
+	go client.Subscribe()
+	go client.Publish()
 	go client.writePump()
 	go client.readPump()
 
