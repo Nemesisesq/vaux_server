@@ -1,0 +1,1 @@
+drop_column("threads", "unique_key")

@@ -318,6 +318,12 @@
   revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/mitchellh/hashstructure"
+  packages = ["."]
+  revision = "2bca23e0e452137f789efbc8610126fd8b94f73b"
+
+[[projects]]
   name = "github.com/monoculum/formam"
   packages = ["."]
   revision = "99ca9dcbaca6d91e9665f817d0da23af6184ced3"
@@ -507,6 +513,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9d4358b82c2637e87248789cc01c50ab18c1b9e2db9b5041f749f3739d55f782"
+  inputs-digest = "5891c3cb4a2c31a20ac2f1df91a9d34e49009457f5010976fc464793f59e279c"
   solver-name = "gps-cdcl"
   solver-version = 1

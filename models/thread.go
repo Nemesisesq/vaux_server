@@ -22,8 +22,9 @@ type Thread struct {
 	LastMessageAt time.Time `json:"last_message_at" db:"last_message_at"`
 	Name          string    `json:"name" db:"name"`
 	New           bool      `json:"new" db:"new"`
+	UniqueKey     string   `db:"unique_key"`
 	Messages      Messages  `json:"messages" has_many:"messages" order_by:"created_at desc"`
-	Owner         User      `json:"user" db:"-" belongs_to:"user"`
+	Owner         User      `json:"owner" db:"-" belongs_to:"user"`
 	OwnerID       uuid.UUID `json:"owner_id" db:"owner_id"`
 	Private       bool      `json:"private" db:"private"`
 	Active        bool      `json:"active" db:"active"`
@@ -67,8 +68,8 @@ func (t Threads) String() string {
 // This method is not required and may be deleted.
 func (t *Thread) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: t.ImageUrl, Name: "ImageUrl"},
-		&validators.TimeIsPresent{Field: t.LastMessageAt, Name: "LastMessageAt"},
+		//&validators.StringIsPresent{Field: t.ImageUrl, Name: "ImageUrl"},
+		//&validators.TimeIsPresent{Field: t.LastMessageAt, Name: "LastMessageAt"},
 		&validators.StringIsPresent{Field: t.Name, Name: "Name"},
 	), nil
 }
@@ -76,7 +77,14 @@ func (t *Thread) Validate(tx *pop.Connection) (*validate.Errors, error) {
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
 // This method is not required and may be deleted.
 func (t *Thread) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
-	return validate.NewErrors(), nil
+	count, err := tx.Where("unique_key = ?", t.UniqueKey).Count(*t)
+
+	verrs := validate.NewErrors()
+
+	for i := 0 ; i < count; i++  {
+		verrs.Add("thread_error", "A chat already exists with these members")
+	}
+	return verrs, err
 }
 
 // ValidateUpdate gets run every time you call "pop.ValidateAndUpdate" method.

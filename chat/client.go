@@ -176,7 +176,6 @@ PUB:
 
 			//Publish the message
 
-
 			if err != nil {
 				panic(err)
 			}

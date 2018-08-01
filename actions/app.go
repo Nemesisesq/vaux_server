@@ -56,22 +56,16 @@ func App() *buffalo.App {
 
 		}
 
-
-
 		app.Use(T.Middleware())
 
 		api := app.Group("/api")
 		//api.Use(ValidateTokensFromHeader)
 
-
-
-
 		app.GET("/", HomeHandler)
-
 
 		app.GET("/verify", ValidateTokensFromHeader(func(c buffalo.Context) error {
 
-			u :=  c.Value("user")
+			u := c.Value("user")
 			return c.Render(http.StatusOK, r.JSON(u))
 		}))
 

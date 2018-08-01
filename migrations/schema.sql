@@ -139,7 +139,8 @@ CREATE TABLE threads (
     active boolean NOT NULL,
     owner_id uuid NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    unique_key character varying(255)
 );
 
 

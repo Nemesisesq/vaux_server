@@ -10,6 +10,10 @@ import (
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/uuid"
 	"github.com/nemesisesq/vaux_server/models"
+	"hash/fnv"
+	"sort"
+	"github.com/mitchellh/hashstructure"
+	"strconv"
 )
 
 func (c *Client) processData(d Data) {
@@ -42,12 +46,86 @@ func createThread(d Data, c *Client) {
 	if err != nil {
 		log.Panic(err)
 	}
-	thread.Owner = c.user
-	thread.OwnerID = c.user.ID
-	err = tx.Create(thread)
+	thread.OwnerID = thread.Owner.ID
+
+	uqk, err := hashMembers(thread)
+	if err != nil {
+		panic(err)
+	}
+
+	thread.UniqueKey = strconv.Itoa(int(uqk))
+	verrs, err := tx.ValidateAndCreate(thread)
+
 	if err != nil {
 		log.Panic(err)
 	}
+
+	if verrs.HasAny() {
+
+		data := Data{
+			"validation_errors",
+			verrs,
+			nil,
+		}
+		out, err := json.Marshal(data)
+
+		if err != nil {
+			panic(err)
+		}
+
+		c.out <- out
+
+		return
+
+	}
+
+	for _, v := range thread.Members {
+		threadMember := &models.ThreadMember{ThreadID: thread.ID, MemberID: v.ID}
+
+		verrs, err := tx.ValidateAndCreate(threadMember)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		if verrs.HasAny() {
+			// Make the errors available inside the html template
+
+			// Render again the new.html template that the user can
+			// correct the input.
+
+			data := Data{
+				"validation_errors",
+				verrs,
+				nil,
+			}
+			out, err := json.Marshal(data)
+
+			if err != nil {
+				errors := Data{
+					"errors",
+					"There was a problem marshaling users",
+					nil,
+				}
+				errOut, _ := json.Marshal(errors)
+				c.out <- errOut
+			}
+
+			c.out <- out
+			return
+		}
+	}
+
+	c.broadcastThreads()
+}
+
+func hashMembers(thread *models.Thread) (uint64, error) {
+	hashes := []int{}
+	for _, v := range thread.Members {
+		hashes = append(hashes, int(hash(v.ID.String())))
+	}
+	sort.Ints(hashes)
+	superKey, err := hashstructure.Hash(hashes, nil)
+	return superKey, err
 }
 
 func SetUser(d Data, c *Client) {
@@ -72,8 +150,32 @@ func SetUser(d Data, c *Client) {
 	}
 	c.user = *user
 	c.broadcastThreads()
+	c.broadcastUsers()
 	//go c.Subscribe()
 	//go c.Publish()
+}
+func (c *Client) broadcastUsers() {
+
+	users, err := GetAllUsers(c)
+
+	data := Data{
+		"users",
+		users,
+		nil,
+	}
+	out, err := json.Marshal(data)
+
+	if err != nil {
+		errors := Data{
+			"errors",
+			"There was a problem marshaling users",
+			nil,
+		}
+		errOut, _ := json.Marshal(errors)
+		c.out <- errOut
+	}
+	c.out <- out
+
 }
 
 func (c *Client) broadcastThreads() {
@@ -109,6 +211,17 @@ func GetAllThreads(c *Client) (models.Threads, error) {
 
 	return threads, nil
 }
+func GetAllUsers(c *Client) (models.Users, error) {
+	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
+	if err != nil {
+		log.Panic(err)
+	}
+	users := models.Users{}
+	tx.Eager().All(&users)
+
+	return users, nil
+}
+
 func GetThreads(c *Client) (models.Threads, error) {
 
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
@@ -136,4 +249,10 @@ func getIDs(t models.Threads) []uuid.UUID {
 		ids = append(ids, v.ID)
 	}
 	return ids
+}
+
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
 }

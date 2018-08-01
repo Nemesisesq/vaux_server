@@ -1,12 +1,13 @@
 package actions
 
 import (
+	"time"
+
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
 	"github.com/nemesisesq/vaux_server/models"
 	"github.com/pkg/errors"
-	"github.com/gobuffalo/pop"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 type D struct {
@@ -44,7 +45,6 @@ func AuthLogin(c buffalo.Context) error {
 
 	refreshToken, err := generateJwtToken(claims)
 
-
 	u.RefreshToken.String = string(refreshToken)
 
 	tx.Save(u)
@@ -61,7 +61,7 @@ func AuthLogin(c buffalo.Context) error {
 	return c.Render(200, r.Auto(c, map[string]interface{}{
 		"status": "successfully logged in",
 		"jwt":    string(jwt),
-		"user" : u,
+		"user":   u,
 	}))
 }
 
