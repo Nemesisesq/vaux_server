@@ -112,18 +112,17 @@ SUB:
 
 		switch v := sub.Receive().(type) {
 		case redis.Message:
-
 			c.out <- v.Data
 		case redis.Subscription:
 			break
 		case error:
-
 			break SUB
 			return
 		default:
 			log.Info("no data")
 		}
 	}
+	return
 }
 
 func (c *Client) Publish() {
@@ -195,6 +194,7 @@ PUB:
 			time.Sleep(10 * time.Millisecond)
 		}
 	}
+	return
 }
 
 func (c *Client) Unsubscribe() {
@@ -229,6 +229,8 @@ func (c *Client) addUser() {
 	if err != nil {
 		panic(err)
 	}
+	log.Info("Lets return some stuff")
+	return
 }
 
 // readPump pumps messages from the websocket connection to the hub.
@@ -251,6 +253,7 @@ func (c *Client) readPump() {
 				log.Printf("error: %v", err)
 			}
 			break
+			return
 		}
 
 		if messageType == 456 {
@@ -269,6 +272,7 @@ func (c *Client) readPump() {
 		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		//c.in <- message
 	}
+	return
 }
 
 // writePump pumps messages from the hub to the websocket wsection.
@@ -315,6 +319,7 @@ func (c *Client) writePump() {
 			}
 		}
 	}
+	return
 }
 
 func Connect(c buffalo.Context) error {

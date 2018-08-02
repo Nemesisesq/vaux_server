@@ -33,6 +33,7 @@ func (c *Client) processData(d Data) {
 
 func createThread(d Data, c *Client) {
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
+	defer tx.Close()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -130,7 +131,7 @@ func hashMembers(thread *models.Thread) (uint64, error) {
 
 func SetUser(d Data, c *Client) {
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
-	//defer tx.Close()
+	defer tx.Close()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -203,6 +204,7 @@ func (c *Client) broadcastThreads() {
 }
 func GetAllThreads(c *Client) (models.Threads, error) {
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
+	defer tx.Close()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -213,6 +215,7 @@ func GetAllThreads(c *Client) (models.Threads, error) {
 }
 func GetAllUsers(c *Client) (models.Users, error) {
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
+	defer tx.Close()
 	if err != nil {
 		log.Panic(err)
 	}
@@ -225,6 +228,7 @@ func GetAllUsers(c *Client) (models.Users, error) {
 func GetThreads(c *Client) (models.Threads, error) {
 
 	tx, err := pop.Connect(envy.Get("GO_ENV", "development"))
+	defer tx.Close()
 	if err != nil {
 		log.Panic(err)
 	}
